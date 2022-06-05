@@ -10,3 +10,9 @@ D:\Projetos\Freela\ApiSGS\Api.Data\obj\Debug\net5.0\Data.csproj.CoreCompileInput
 D:\Projetos\Freela\ApiSGS\Api.Data\obj\Debug\net5.0\Data.dll
 D:\Projetos\Freela\ApiSGS\Api.Data\obj\Debug\net5.0\ref\Data.dll
 D:\Projetos\Freela\ApiSGS\Api.Data\obj\Debug\net5.0\Data.pdb
+D:\Projetos\Freela\ApiSGS\Api.Data\bin\Debug\net5.0\Data.runtimeconfig.json
+D:\Projetos\Freela\ApiSGS\Api.Data\bin\Debug\net5.0\Data.runtimeconfig.dev.json
+D:\Projetos\Freela\ApiSGS\Api.Data\obj\Debug\net5.0\Data.genruntimeconfig.cache
+D:\Projetos\Freela\ApiSGS\Api.Data\bin\Debug\net5.0\Domain.dll
+D:\Projetos\Freela\ApiSGS\Api.Data\bin\Debug\net5.0\Domain.pdb
+D:\Projetos\Freela\ApiSGS\Api.Data\obj\Debug\net5.0\Data.csproj.CopyComplete
