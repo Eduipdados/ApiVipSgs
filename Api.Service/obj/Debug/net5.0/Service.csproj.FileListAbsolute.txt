@@ -1,0 +1,12 @@
+D:\Projetos\Freela\ApiSGS\Api.Service\bin\Debug\net5.0\Service.deps.json
+D:\Projetos\Freela\ApiSGS\Api.Service\bin\Debug\net5.0\Service.dll
+D:\Projetos\Freela\ApiSGS\Api.Service\bin\Debug\net5.0\ref\Service.dll
+D:\Projetos\Freela\ApiSGS\Api.Service\bin\Debug\net5.0\Service.pdb
+D:\Projetos\Freela\ApiSGS\Api.Service\obj\Debug\net5.0\Service.csproj.AssemblyReference.cache
+D:\Projetos\Freela\ApiSGS\Api.Service\obj\Debug\net5.0\Service.GeneratedMSBuildEditorConfig.editorconfig
+D:\Projetos\Freela\ApiSGS\Api.Service\obj\Debug\net5.0\Service.AssemblyInfoInputs.cache
+D:\Projetos\Freela\ApiSGS\Api.Service\obj\Debug\net5.0\Service.AssemblyInfo.cs
+D:\Projetos\Freela\ApiSGS\Api.Service\obj\Debug\net5.0\Service.csproj.CoreCompileInputs.cache
+D:\Projetos\Freela\ApiSGS\Api.Service\obj\Debug\net5.0\Service.dll
+D:\Projetos\Freela\ApiSGS\Api.Service\obj\Debug\net5.0\ref\Service.dll
+D:\Projetos\Freela\ApiSGS\Api.Service\obj\Debug\net5.0\Service.pdb
