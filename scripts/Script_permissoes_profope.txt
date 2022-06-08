@@ -1,0 +1,26 @@
+DECLARE
+   v_idt_per     sca.sec#_permissoes_especiais.idt_per%type;
+   v_coluna      sca.sec#_per_esp_colunas.coluna%type;
+
+BEGIN
+
+  SELECT SCA.sec#_pkg_bibsec.obter_idt_per INTO v_idt_per FROM DUAL;
+
+  INSERT INTO SCA.sec#_permissoes_especiais 
+      ( idt_per, permissao, grant_option, usuario, objeto )
+  VALUES
+      ( v_idt_per,'S','V','PROFOPE','ALUNOS_CONTRATO' );
+
+  SELECT SCA.sec#_pkg_bibsec.obter_idt_per INTO v_idt_per FROM DUAL;
+
+  INSERT INTO SCA.sec#_permissoes_especiais 
+      ( idt_per, permissao, grant_option, usuario, objeto )
+  VALUES
+      ( v_idt_per,'R','V','PROFOPE','ALUNOS_CONTRATO' );
+
+
+  COMMIT;
+
+  sca.sec#_p_atu_seguranca;
+
+END;

@@ -1,0 +1,69 @@
+sonarqube-check:
+  image: mcr.microsoft.com/dotnet/sdk:5.0
+  stage: .pre
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script: 
+      - "apt-get update"
+      - "apt-get install --yes openjdk-11-jre"
+      - "dotnet tool install --global dotnet-sonarscanner"
+      - "export PATH=\"$PATH:$HOME/.dotnet/tools\""
+      - export PATH="$PATH:/root/.dotnet/tools"
+      - dotnet sonarscanner begin /k:"diluicao-facilitada_back-dif_AXzc0uRMjEZl7aJuSwC-" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="$SONAR_HOST_URL" /d:sonar.cs.opencover.reportsPaths=./coverage.opencover.xml /d:sonar.projectBaseDir=../
+      - dotnet build
+      - dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=../../coverage
+      - dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
+  # allow_failure: true
+  # only:
+  #   - master # or the name of your main branch
+
+build:
+    # only:
+    # - develop
+    # - main
+    image: mcr.microsoft.com/dotnet/sdk:5.0
+    stage: build
+    script:
+        - "dotnet build"
+test:
+    image: mcr.microsoft.com/dotnet/sdk:5.0
+    stage: test
+    script:
+        - "dotnet test"
+
+deploy:
+  only:
+  - main
+  image: google/cloud-sdk
+  stage: deploy
+  script:
+    - echo $GCP_SERVICE_KEY > gcloud-service-key.json
+    - gcloud auth activate-service-account --key-file gcloud-service-key.json
+    - gcloud config set project $GCP_PROJECT_ID
+    - gcloud builds submit . --config cloudbuild.yaml --substitutions _GCP_PROJECT_ID=$GCP_PROJECT_ID,_GCP_ARTIFACT_REGISTRY_URL=$GCP_ARTIFACT_REGISTRY_URL,_GCP_ARTIFACT_REGISTRY_NAME=$GCP_ARTIFACT_REGISTRY_NAME,_PROJECT_NAME=$PROJECT_NAME,_GCP_CLOUD_RUN_SERVICE_REGION=$GCP_CLOUD_RUN_SERVICE_REGION,_GCP_CLOUD_RUN_SERVICE_NAME=$GCP_CLOUD_RUN_SERVICE_NAME,_GCP_CLOUD_RUN_VPC_CONNECTOR=$GCP_CLOUD_RUN_VPC_CONNECTOR,_GCP_CLOUD_RUN_MIN_INSTANCES=$GCP_CLOUD_RUN_MIN_INSTANCES,_GCP_CLOUD_RUN_MAX_INSTANCES=$GCP_CLOUD_RUN_MAX_INSTANCES,_CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
+
+deploy-develop:
+  only:
+  - develop
+  image: google/cloud-sdk
+  stage: deploy
+  script:
+    - echo $GCP_SERVICE_KEY > gcloud-service-key.json
+    - gcloud auth activate-service-account --key-file gcloud-service-key.json
+    - gcloud config set project $GCP_PROJECT_ID
+    - gcloud builds submit . --config cloudbuildd.yaml --substitutions _GCP_PROJECT_ID=$GCP_PROJECT_ID,_GCP_ARTIFACT_REGISTRY_URL=$GCP_ARTIFACT_REGISTRY_URL,_GCP_ARTIFACT_REGISTRY_NAME=$GCP_ARTIFACT_REGISTRY_NAME,_PROJECT_NAME=$PROJECT_NAME,_GCP_CLOUD_RUN_SERVICE_REGION=$GCP_CLOUD_RUN_SERVICE_REGION,_GCP_CLOUD_RUN_SERVICE_NAME1=$GCP_CLOUD_RUN_SERVICE_NAME1,_GCP_CLOUD_RUN_VPC_CONNECTOR=$GCP_CLOUD_RUN_VPC_CONNECTOR,_GCP_CLOUD_RUN_MIN_INSTANCES=$GCP_CLOUD_RUN_MIN_INSTANCES,_GCP_CLOUD_RUN_MAX_INSTANCES=$GCP_CLOUD_RUN_MAX_INSTANCES,_CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
+deploy-homolog:
+  only:
+  - homolog
+  image: google/cloud-sdk
+  stage: deploy
+  script:
+    - echo $GCP_SERVICE_KEY > gcloud-service-key.json
+    - gcloud auth activate-service-account --key-file gcloud-service-key.json
+    - gcloud config set project $GCP_PROJECT_ID
+    - gcloud builds submit . --config cloudbuildh.yaml --substitutions _GCP_PROJECT_ID=$GCP_PROJECT_ID,_GCP_ARTIFACT_REGISTRY_URL=$GCP_ARTIFACT_REGISTRY_URL,_GCP_ARTIFACT_REGISTRY_NAME=$GCP_ARTIFACT_REGISTRY_NAME,_PROJECT_NAME=$PROJECT_NAME,_GCP_CLOUD_RUN_SERVICE_REGION=$GCP_CLOUD_RUN_SERVICE_REGION,_GCP_CLOUD_RUN_SERVICE_NAME2=$GCP_CLOUD_RUN_SERVICE_NAME2,_GCP_CLOUD_RUN_VPC_CONNECTOR=$GCP_CLOUD_RUN_VPC_CONNECTOR,_GCP_CLOUD_RUN_MIN_INSTANCES=$GCP_CLOUD_RUN_MIN_INSTANCES,_GCP_CLOUD_RUN_MAX_INSTANCES=$GCP_CLOUD_RUN_MAX_INSTANCES,_CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA

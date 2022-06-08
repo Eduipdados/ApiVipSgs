@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <CodeAnalysisRuleSet>..\..\.sonarlint\diluicao-facilitada_back-dif_axzc0urmjezl7ajuswc-csharp.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ViewModels\Aluno\**" />
+    <Compile Remove="ViewModels\Beneficio\**" />
+    <Compile Remove="ViewModels\Boleto\**" />
+    <Compile Remove="ViewModels\Cartao\**" />
+    <Compile Remove="ViewModels\Conexoes\**" />
+    <Compile Remove="ViewModels\Curriculo\**" />
+    <Compile Remove="ViewModels\Curso\**" />
+    <Compile Remove="ViewModels\Docsign\**" />
+    <EmbeddedResource Remove="ViewModels\Aluno\**" />
+    <EmbeddedResource Remove="ViewModels\Beneficio\**" />
+    <EmbeddedResource Remove="ViewModels\Boleto\**" />
+    <EmbeddedResource Remove="ViewModels\Cartao\**" />
+    <EmbeddedResource Remove="ViewModels\Conexoes\**" />
+    <EmbeddedResource Remove="ViewModels\Curriculo\**" />
+    <EmbeddedResource Remove="ViewModels\Curso\**" />
+    <EmbeddedResource Remove="ViewModels\Docsign\**" />
+    <None Remove="ViewModels\Aluno\**" />
+    <None Remove="ViewModels\Beneficio\**" />
+    <None Remove="ViewModels\Boleto\**" />
+    <None Remove="ViewModels\Cartao\**" />
+    <None Remove="ViewModels\Conexoes\**" />
+    <None Remove="ViewModels\Curriculo\**" />
+    <None Remove="ViewModels\Curso\**" />
+    <None Remove="ViewModels\Docsign\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ViewModels\BeneficioConvenioViewModel.cs" />
+    <Compile Remove="ViewModels\DescontoEADViewModel.cs" />
+    <Compile Remove="ViewModels\DescontoViewModel.cs" />
+    <Compile Remove="ViewModels\ExcecaoDescontoViewModel.cs" />
+    <Compile Remove="ViewModels\ParcelaEADViewModel.cs" />
+    <Compile Remove="ViewModels\ParcelaViewModel.cs" />
+    <Compile Remove="ViewModels\ResponsaveisViewModel.cs" />
+    <Compile Remove="ViewModels\SolicitacaoFiefViewModel.cs" />
+    <Compile Remove="ViewModels\TurmaViewModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\.sonarlint\diluicao-facilitada_back-dif_axzc0urmjezl7ajuswc-\CSharp\SonarLint.xml" Link="SonarLint.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="FluentValidation" Version="10.3.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tiradentes.DF.Domain\VipSgs.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,288 @@
+PROCEDURE obter_dados_pgto( p_ano            NUMBER,
+                            p_sem            NUMBER,
+                            p_idt_alu        NUMBER,
+                            p_parcela        NUMBER,
+                            p_data           DATE,
+                            p_seq_bol   OUT  NUMBER,
+                            p_dat_venc  OUT  DATE,
+                            p_val_parc  OUT  NUMBER,
+                            p_tpo_desc  OUT  CHAR,
+                            p_val_desc  OUT  NUMBER,
+                            p_mul_jur   OUT  NUMBER,
+                            p_origem         CHAR DEFAULT NULL,
+                            p_tpo_pgto       CHAR DEFAULT NULL,
+                            p_venc_alt       BOOLEAN DEFAULT FALSE )
+IS
+  v_dat_venc   pgto_alunos.dat_venc%type;
+  v_val_parc   pgto_alunos.val_parc%type;
+  v_val_benef  pgto_alunos.val_parc%type;
+  v_val_benef2 pgto_alunos.val_parc%type;
+  v_seq_parc   alunos.seq_tpo_parc%type;
+  v_beneficios politica_benef_pkg.t_vet_benef;
+  v_venc_alt   pgto_dat_referencia.dat_venc%type;
+BEGIN
+
+  IF p_parcela = 1 THEN
+
+    /* Obtém o valor do benefício de empresas conveniadas */
+    v_val_benef := scf.beneficios_conv_pkg.obter_beneficio_parcela( 'SCA', p_idt_alu, p_ano*10+p_sem,p_parcela );
+
+    /* Obtêm os dados do aluno */
+    v_seq_parc := alunos_pkg.obter_seq_tpo_parc( p_idt_alu );
+    tipos_parcelas_pkg.obter_dados_parcela( v_seq_parc, p_ano, p_sem, 1, v_val_parc, p_dat_venc );
+    /* Obtém os dados do desconto */
+    IF v_val_parc IS NOT NULL THEN
+      p_seq_bol := NULL;
+      p_mul_jur := 0;
+      obter_dados_parcela( p_ano, p_sem, p_idt_alu, 1, v_val_parc, p_tpo_desc, p_val_desc, p_val_parc );
+     
+     /*Se aluno optou por diluição facilitada atualiza o valor cobrado da parcela*/
+      SCA.DILUICOES_FACILITADAS_PKG.atualizar_dif_parcela(p_ano, p_sem, 1, p_idt_alu, p_val_parc);
+     
+      /* A variável gerar_beneficio é utilizada para evitar que o programa entre em um loop infinito */
+      if ( politica_benef_pkg.gerar_beneficio ) then
+        politica_benef_pkg.calcular_beneficio( p_ano, p_sem, p_idt_alu, p_parcela, p_data, v_val_benef2, v_beneficios, p_origem, p_tpo_pgto );
+        if ( nvl( v_val_benef2, 0 ) > 0 ) and ( p_val_parc - v_val_benef - nvl( p_val_desc, 0 ) - nvl( v_val_benef2, 0 ) ) >= 0 then
+          p_val_desc := nvl( p_val_desc, 0 ) + nvl( v_val_benef2, 0 );
+          if p_tpo_desc <> 'X' then
+             p_tpo_desc := 'V';
+          end if;
+
+        end if;
+      end if;
+
+      p_val_parc := p_val_parc - v_val_benef;
+
+    ELSE
+      p_seq_bol  := NULL;    p_dat_venc := NULL;    p_val_parc := NULL;
+      p_tpo_desc := NULL;    p_val_desc := NULL;    p_mul_jur  := NULL;
+    END IF;
+
+  ELSE
+    /* Obtém os dados do pagamento */
+    SELECT seq_boleto, dat_venc, val_parc, tpo_desc, val_desc
+        INTO p_seq_bol, v_dat_venc, v_val_parc, p_tpo_desc, p_val_desc
+        FROM pgto_alunos
+        WHERE ano = p_ano AND semestre = p_sem AND idt_alu = p_idt_alu AND parcela = p_parcela;
+
+    if ( p_venc_alt ) then
+      v_venc_alt:= pgto_dat_ref_pkg.obter_data_ativa(p_ano,p_sem,p_parcela);
+      if ( v_venc_alt is not null ) then
+        v_dat_venc:= v_venc_alt;
+      end if;
+    end if;
+
+    /* Obtém os descontos do aluno, caso o mesmo possuá-os */
+    if ( politica_benef_pkg.gerar_beneficio ) then
+      politica_benef_pkg.calcular_beneficio( p_ano, p_sem, p_idt_alu, p_parcela, p_data, v_val_benef, v_beneficios, p_origem, p_tpo_pgto, p_venc_alt => p_venc_alt );
+    end if;
+
+    if ( scf.lib_multa_juros_pkg.existe_lib_sca( p_ano, p_sem, p_idt_alu, p_parcela ) ) then
+         p_mul_jur := 0;
+    else
+         p_mul_jur := calcular_multa_juros( p_ano, p_sem, p_parcela, v_dat_venc, p_data, v_val_parc );
+    end if;
+
+    p_val_parc  := v_val_parc;
+    /* Caso a soma do desconto supere o valor devido, o desconto referente à política de benefício não deve ser considerado */
+    if ( p_val_parc + p_mul_jur - p_val_desc - v_val_benef ) >= 0 then
+      p_val_desc := p_val_desc + nvl( v_val_benef, 0 );
+      if ( nvl( v_val_benef, 0 ) > 0 ) then
+        if p_tpo_desc <> 'X' then
+            p_tpo_desc := 'V';
+        end if;
+      end if;
+    end if;
+    IF p_parcela BETWEEN 90 AND 93 THEN
+      p_dat_venc := TRUNC( SYSDATE );
+    ELSE
+      p_dat_venc := v_dat_venc;
+    END IF;
+  END IF;
+
+
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    p_seq_bol  := NULL;    p_dat_venc := NULL;    p_val_parc := NULL;
+    p_tpo_desc := NULL;    p_val_desc := NULL;    p_mul_jur  := NULL;
+END;
+
+
+
+*******************************************************************************************
+PROCEDURE gerar_parcelas( p_ano       NUMBER,
+                          p_sem       NUMBER,
+                          p_idt_alu   NUMBER )
+IS
+  CURSOR c_parcelas( pc_seq_parc  NUMBER ) IS
+      SELECT pa.parcela, pa.val_parcela, pa.dat_venc
+          FROM parcelas pa
+          WHERE ano_vdp = p_ano AND sem_vdp = p_sem AND sequencial = pc_seq_parc AND
+                NOT EXISTS( SELECT pg.parcela
+                                FROM pgto_alunos pg
+                                WHERE pg.ano = pa.ano_vdp AND pg.semestre = pa.sem_vdp AND
+                                      pg.idt_alu = p_idt_alu AND pg.parcela = pa.parcela );
+
+  v_parcela    c_parcelas%rowtype;
+  v_seq_parc   alunos.seq_tpo_parc%type;
+  v_tpo_desc   descontos.tpo_desconto%type;
+  v_val_benef  pgto_alunos.val_parc%type;
+  v_val_parc   pgto_alunos.val_parc%type;
+  v_val_desc   NUMBER(8,2);
+
+  v_val_total       pgto_alunos.val_parc%type := 0;
+  v_val_por_parcela pgto_alunos.val_parc%type;
+  v_val_dif         pgto_alunos.val_parc%type;
+  v_vencido         boolean := false;
+  v_qtd_parcelas    simple_integer := 0;
+  v_count_voucher20211 pls_integer;
+  v_count_existe_diluicao integer DEFAULT 0;
+BEGIN
+
+  /* Obter sequencial da parcela para o aluno */
+  v_seq_parc := alunos_pkg.obter_seq_tpo_parc( p_idt_alu );
+  IF v_seq_parc IS NULL THEN
+    raise_application_error( -20000, 'Aluno enexistente' );
+
+  ELSIF NOT( tipos_parcelas_pkg.parcela_cadastrada( v_seq_parc, p_ano, p_sem, 6 ) ) THEN
+    raise_application_error( -20000, 'Os dados financeiros para este ano/semestre não foram cadastrados' );
+
+  /* Só gera as parcelas se a primeira já estiver paga */
+  ELSIF obter_status_parcela( p_ano, p_sem, p_idt_alu, 1 ) <> 'N' THEN
+
+	  OPEN c_parcelas( v_seq_parc );
+	    FETCH c_parcelas INTO v_parcela;
+	    WHILE c_parcelas%found LOOP
+	            if(v_parcela.dat_venc < sysdate) then
+	             v_vencido := true;
+	             v_val_total := v_val_total + v_parcela.val_parcela;
+	
+	            else
+	             v_qtd_parcelas := v_qtd_parcelas + 1;
+	            end if;
+	
+	     FETCH c_parcelas INTO v_parcela;
+	     END LOOP;
+	  CLOSE c_parcelas;
+
+  -- Verifica se possui voucher cadastrado para esse aluno em 2021.1 e não faz a proporcionalidade de parcelas vencidas.
+	  select count(*) into v_count_voucher20211 from sca.desc_avulso_benef
+	  where idt_alu = p_idt_alu and
+	      status = 'A' and
+	      tipo_benef = 'J' and
+	      tipo_duracao = 'P' and
+	      duracao in (1,2,3) and
+	      dat_inativacao is null and
+	      ano_inicio = 2021 and
+	      sem_inicio = 1 and
+	      tipo_desc_benef = 'P';
+	  if (v_count_voucher20211 > 0) then
+	    v_vencido := false;
+	  end if;
+
+	  if(v_vencido) then
+	    if(nvl(v_qtd_parcelas, 0) <= 0) then
+	        raise_application_error( -20000, 'Todas parcelas estão vencidas.' );
+	    end if;
+    v_val_por_parcela := trunc( v_val_total / v_qtd_parcelas, 2);
+    v_val_dif := v_val_total - (v_val_por_parcela * v_qtd_parcelas);
+  end if;
+
+    /* Percorre todas as parcelas não geradas, inserindo-as em pgto_alunos como devida */
+    OPEN c_parcelas( v_seq_parc );
+    FETCH c_parcelas INTO v_parcela;
+    WHILE c_parcelas%found LOOP
+      /* Obtém os dados do desconto */
+      obter_dados_parcela( p_ano, p_sem, p_idt_alu, v_parcela.parcela, v_parcela.val_parcela, v_tpo_desc, v_val_desc,
+                           v_parcela.val_parcela );
+
+      /*Se aluno optou por diluição facilitada atualiza o valor cobrado da parcela*/
+      SCA.DILUICOES_FACILITADAS_PKG.atualizar_dif_parcela(p_ano, p_sem, v_parcela.parcela, p_idt_alu, v_parcela.val_parcela);
+     
+      /* Verifica se o aluno possui benefício de contratos com empresas conveniadas */
+      v_val_benef := scf.beneficios_conv_pkg.obter_beneficio_parcela( 'SCA', p_idt_alu, p_ano*10+p_sem, v_parcela.parcela );
+      v_val_parc  := v_parcela.val_parcela - v_val_benef;
+
+      if v_val_benef + v_val_desc > v_parcela.val_parcela then
+        raise_application_error( -20000, 'Esta operação não pode ser realizada pois a soma do valor benefício com o total dos descontos '||
+                                         'não deve ser superior ao valor da parcela' );
+      else
+        /* Insere a nova parcela */
+        setar_permissao( TRUE, FALSE, FALSE, TRUE, FALSE );
+
+        if(v_parcela.parcela <> 1 and v_vencido) then
+          if(v_parcela.dat_venc < sysdate) then
+             v_val_parc := 0;
+          else
+             v_val_parc := v_val_parc + v_val_por_parcela + v_val_dif;
+             v_val_dif := 0;
+          end if;
+        end if;
+
+        INSERT INTO pgto_alunos
+          ( ano, semestre, idt_alu, parcela, dat_venc, val_parc, tpo_desc, val_desc, sta_pgto )
+        VALUES
+          ( p_ano, p_sem, p_idt_alu, v_parcela.parcela, v_parcela.dat_venc, v_val_parc, v_tpo_desc, v_val_desc, 'N' );
+        setar_permissao( FALSE, FALSE, FALSE, FALSE, FALSE );
+      end if;
+
+      /* Obtém a próxima parcela a ser gerada */
+      FETCH c_parcelas INTO v_parcela;
+    END LOOP;
+    CLOSE c_parcelas;
+
+    v_count_existe_diluicao := sca.existe_dados_dif_parcela(idt_alu);
+   
+    IF(v_count_existe_diluicao > 0) THEN
+    	incluir_dif_facilitada_log(ANO, SEMESTRE, IDT_ALU, QTD_PARCELAS_DISPONIVEIS);
+    END IF;
+   
+  END IF;
+
+EXCEPTION
+  WHEN OTHERS THEN
+    setar_permissao( FALSE, FALSE, FALSE, FALSE, FALSE );
+    RAISE;
+
+END;
+
+*************************************************************
+ALTER TABLE SCA.PARCELAS_DILUICOES DROP COLUMN VALOR;
+
+
+
+ALTER TABLE SCA.PARCELAS_DILUICOES
+ADD (
+VALOR_BASE NUMBER(8,2) DEFAULT 0 NOT NULL,
+VALOR_DILUICAO NUMBER(8,2) DEFAULT 0 NOT NULL,
+VALOR_COBRADO NUMBER(8,2) DEFAULT 0 NOT NULL
+);
+
+ALTER TABLE SCA.ALUNOS_DILUICOES
+DROP COLUMN VAL_LANCADO;
+
+
+
+ALTER TABLE SCA.ALUNOS_DILUICOES
+DROP COLUMN VAL_TOTAL;
+
+
+
+ALTER TABLE SCA.ALUNOS_DILUICOES
+ADD (
+VALOR_DILUIDO_SEMESTRE NUMBER(8,2)DEFAULT 0 NOT NULL ,
+VALOR_LANCADO NUMBER(8,2) DEFAULT 0 NOT NULL,
+VALOR_TOTAL NUMBER(8,2) DEFAULT 0 NOT NULL,
+SITUACAO NUMBER(1) DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE SCA.PARCELAS_DILUICOES_PENDENTES(
+ID NUMBER GENERATED BY DEFAULT AS IDENTITY,
+IDT_ALU NUMBER(6,0) NOT NULL,
+ANO NUMBER(4,0) NOT NULL,
+SEMESTRE NUMBER(1,0) NOT NULL,
+QTD_PARCELAS_DISPONIVEIS NUMBER(1,0) NOT NULL,
+SITUACAO NUMBER(1,0) DEFAULT 0 NOT NULL,
+PRIMARY KEY(ID)
+);
+**********************************************************

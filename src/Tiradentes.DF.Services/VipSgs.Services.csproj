@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <CodeAnalysisRuleSet>..\..\.sonarlint\diluicao-facilitada_back-dif_axzc0urmjezl7ajuswc-csharp.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Interfaces\IAlunoContratoService.cs" />
+    <Compile Remove="Interfaces\IAlunoEadService.cs" />
+    <Compile Remove="Interfaces\IAlunoService.cs" />
+    <Compile Remove="Interfaces\IBeneficioService.cs" />
+    <Compile Remove="Interfaces\IBoletoEadService.cs" />
+    <Compile Remove="Interfaces\IBoletoMatService.cs" />
+    <Compile Remove="Interfaces\IBoletoService.cs" />
+    <Compile Remove="Interfaces\ICartaoEadService.cs" />
+    <Compile Remove="Interfaces\ICartaoMatService.cs" />
+    <Compile Remove="Interfaces\ICartaoService.cs" />
+    <Compile Remove="Interfaces\IConexoesService.cs" />
+    <Compile Remove="Interfaces\ICrmEducacionalService.cs" />
+    <Compile Remove="Interfaces\IDescontoEADService.cs" />
+    <Compile Remove="Interfaces\IDescontoService.cs" />
+    <Compile Remove="Interfaces\IDiluicaoFacilitadaService.cs" />
+    <Compile Remove="Interfaces\IDocSignClientService.cs" />
+    <Compile Remove="Interfaces\IDocSignService.cs" />
+    <Compile Remove="Services\AlunoContratoService.cs" />
+    <Compile Remove="Services\AlunoEadService.cs" />
+    <Compile Remove="Services\AlunoService.cs" />
+    <Compile Remove="Services\BeneficioService.cs" />
+    <Compile Remove="Services\BoletoEadService.cs" />
+    <Compile Remove="Services\BoletoMatService.cs" />
+    <Compile Remove="Services\BoletoService.cs" />
+    <Compile Remove="Services\CartaoEadService.cs" />
+    <Compile Remove="Services\CartaoMatService.cs" />
+    <Compile Remove="Services\CartaoService.cs" />
+    <Compile Remove="Services\ConexoesService.cs" />
+    <Compile Remove="Services\CrmEducacionalService.cs" />
+    <Compile Remove="Services\DescontoEADService.cs" />
+    <Compile Remove="Services\DescontoService.cs" />
+    <Compile Remove="Services\DiluicaoFacilitadaService.cs" />
+    <Compile Remove="Services\DocSignClientService.cs" />
+    <Compile Remove="Services\DocSignService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\.sonarlint\diluicao-facilitada_back-dif_axzc0urmjezl7ajuswc-\CSharp\SonarLint.xml" Link="SonarLint.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="FluentValidation" Version="10.3.3" />
+    <PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.0.2.42" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tiradentes.DF.Application\VipSgs.Application.csproj" />
+    <ProjectReference Include="..\Tiradentes.DF.Domain\VipSgs.Domain.csproj" />
+    <ProjectReference Include="..\Tiradentes.DF.Infrastructure\VipSgs.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+  </ItemGroup>
+
+</Project>

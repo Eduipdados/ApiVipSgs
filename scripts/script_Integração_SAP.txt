@@ -1,0 +1,63 @@
+VALIDAÇÕES PARA O RESULTADO DA CONSULTA:
+Matrícula do Aluno
+O campo MAT_ALU é obrigatório para as Modalidades de Ensino: 
+Graduação Presencial (COD_MODALIDADE_ENSINO = ‘S’) 
+Ensino a Distância (COD_MODALIDADE_ENSINO = ‘E’)
+Pós-Graduação Lato Sensu (COD_MODALIDADE_ENSINO = ‘P’) 
+Pós-Graduação Stricto Sensu (COD_MODALIDADE_ENSINO = ‘I’)
+Dessa forma, caso o campo MAT_ALU retorne nulo para as modalidades de ensino mencionadas, deverá ser gerado um erro (‘Matrícula não Encontrada’) informando também o identificador do título (IDT_TITULO_AVU);
+Modalidade de Ensino
+Deverá ser gerado um erro (‘Modalidade de Ensino não Identificada’), informando também o identificador do título (IDT_TITULO_AVU), caso a Modalidade de Ensino (COD_MODALIDADE_ENSINO) retornada seja diferente de: 
+Graduação Presencial (COD_MODALIDADE_ENSINO = ‘S’)
+Ensino a Distância (COD_MODALIDADE_ENSINO = ‘E’)
+Pós-Graduação Lato Sensu (COD_MODALIDADE_ENSINO = ‘P’)
+Pós-Graduação Stricto Sensu (COD_MODALIDADE_ENSINO = ‘I’)
+Atividade de Extensão (COD_MODALIDADE_ENSINO = ‘X’)
+Instituição de Ensino
+Caso o campo IES, que compõe o campo CHAVE, retorne nulo, deverá ser gerado um erro (Não foi possível obter a IES. Entre em contato com o administrador do sistema) informando também o identificador do título (IDT_TITULO_AVU);
+
+
+
+
+
+
+
+TÍTULO AVULSO: 12 - Cont. Cartão Crédito - RECEBIMENTOS
+ select (t.ies || ';' || 'TITAVU_' || t.codigo || ';' || lpad(to_char(t.idt_titulo_avu), 10, '0')) id_externo,
+        ('TITAVU_' || t.codigo) origem, t.data_pgto, t.sta_pgto, t.val_dinheiro, t.val_cheque,
+        t.val_boleto, t.val_cartao_cred, t.val_cartao_deb, t.val_desc val_desconto, t.multa_juros 
+  from (select p.idt_titulo_avu, z.codigo,
+               case 
+                 when p.tpo_baixa in ('R','J','B') then 'F' --Tipo Pagmento: Regularização, Subjidice ou Banco
+                 when p.tpo_baixa in ('I')         then 'N' --Tipo Pagamento Internet
+                 when p.tpo_baixa in ('T')         then 'S' --Tipo Pagamento Tesouraria
+               end sta_pgto,
+               nvl(p.multa_juros, 0) multa_juros,               
+               trunc(p.dat_pgto) as data_pgto,
+               case 
+                 when p.tpo_baixa in ('R','J') then p.val_titulo + nvl(p.multa_juros, 0) --Tipo Pagmento: Regularização ou Subjidice
+                 when p.tpo_baixa in ('B','I','T') then nvl(p.val_desc, 0 )  --Tipo Pagmento: Banco, Internet ou Tesouraria
+               end val_desc,
+               case 
+                 when p.tpo_baixa in ('R','J','I','T') then 0 --Tipo Pagmento: Regularização, Subjidice, Internet ou Tesouraria
+                 when p.tpo_baixa in ('B') then ( p.val_titulo + nvl(p.multa_juros, 0) - nvl(p.val_desc, 0 )) --Tipo Pagamento Banco
+               end val_boleto,               
+               case 
+                 when p.tpo_baixa in ('R','J','B') then 0 --Tipo Pagmento: Regularização, Subjidice ou Banco
+                 when p.tpo_baixa in ('I','T') then ( p.val_titulo + nvl(p.multa_juros, 0) - nvl(p.val_desc, 0 )) --Tipo Pagamento Internet
+               end val_cartao_cred,               
+               0 val_cartao_deb, 
+               0 val_dinheiro,
+               0 val_cheque,
+               decode((select lower(value) data_base_name FROM sec#_.v_databasename),'producao','UNITSE',
+               'prodfits','UNITAL','facipe','UNITPE','fits-piedade','FITSPE','goiana','GOIANA',
+               'saoluis','FSLF','banco de teste - tesunit','UNITSE',
+               'banco de teste - tesunit','UNITSE','rac de homologacao - unit','UNITSE') ies
+          from scf.sap_titulos_avulsos p join scf.sap_tipos_titulos_avulsos z on z.tta_id = p.idt_tipo_titulo
+          where z.codigo = '12'
+            and p.status = 'A' 
+            and p.dat_pgto is not null 
+            and to_char(p.dat_pgto,'YYYYMM') = :p_ano_ref||lpad(:p_mes_ref,2,'0')
+            and nvl(p.tpo_baixa, 'N') <> 'N'
+            and ((p.val_titulo + nvl(p.multa_juros, 0)) - nvl(p.val_desc, 0)) > 0) t
+

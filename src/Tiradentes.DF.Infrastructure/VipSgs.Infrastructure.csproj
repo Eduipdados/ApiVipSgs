@@ -1,0 +1,82 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <CodeAnalysisRuleSet>..\..\.sonarlint\diluicao-facilitada_back-dif_axzc0urmjezl7ajuswc-csharp.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Configurations\AlunoCadastroConfiguration.cs" />
+    <Compile Remove="Configurations\AlunoConfiguration.cs" />
+    <Compile Remove="Configurations\AlunoDiluicaoConfiguration.cs" />
+    <Compile Remove="Configurations\AlunoEADConfiguration.cs" />
+    <Compile Remove="Configurations\BeneficioConvenioConfiguration.cs" />
+    <Compile Remove="Configurations\BeneficioFiefConfiguration.cs" />
+    <Compile Remove="Configurations\CampusConfiguration.cs" />
+    <Compile Remove="Configurations\CandidatoConfiguration.cs" />
+    <Compile Remove="Configurations\CurriculoConfiguration.cs" />
+    <Compile Remove="Configurations\CursoCampusConfiguration.cs" />
+    <Compile Remove="Configurations\CursoConfiguration.cs" />
+    <Compile Remove="Configurations\CursoEADConfiguration.cs" />
+    <Compile Remove="Configurations\DadosCandidatoCrmConfiguration.cs" />
+    <Compile Remove="Configurations\DadosProcessoCrmConfiguration.cs" />
+    <Compile Remove="Configurations\DescontoConfiguration.cs" />
+    <Compile Remove="Configurations\DescontoEADConfiguration.cs" />
+    <Compile Remove="Configurations\ExcecaoDescontoConfiguration.cs" />
+    <Compile Remove="Configurations\FaixasPeriodosConfiguration.cs" />
+    <Compile Remove="Configurations\PagamentoConfiguration.cs" />
+    <Compile Remove="Configurations\ParametroChaveConfiguration.cs" />
+    <Compile Remove="Configurations\ParametroTextoConfiguration.cs" />
+    <Compile Remove="Configurations\ParcelaConfiguration.cs" />
+    <Compile Remove="Configurations\ParcelaDiluicaoConfiguration.cs" />
+    <Compile Remove="Configurations\ParcelaEADConfiguration.cs" />
+    <Compile Remove="Configurations\ProcessoConfiguration.cs" />
+    <Compile Remove="Configurations\ResponsaveisConfiguration.cs" />
+    <Compile Remove="Configurations\SolicitacaoFiefConfiguration.cs" />
+    <Compile Remove="Configurations\TurmaConfiguration1.cs" />
+    <Compile Remove="Repository\AlunoContratoRepository.cs" />
+    <Compile Remove="Repository\AlunoDiluicaoRepository.cs" />
+    <Compile Remove="Repository\AlunoEADRepository.cs" />
+    <Compile Remove="Repository\AlunoRepository.cs" />
+    <Compile Remove="Repository\BeneficioRepository.cs" />
+    <Compile Remove="Repository\BoletoEadRepository.cs" />
+    <Compile Remove="Repository\BoletoMatRepository.cs" />
+    <Compile Remove="Repository\BoletoRepository.cs" />
+    <Compile Remove="Repository\CartaoEadRepository.cs" />
+    <Compile Remove="Repository\CartaoMatRepository.cs" />
+    <Compile Remove="Repository\CartaoRepository.cs" />
+    <Compile Remove="Repository\DadosCandidatoCrmRepository.cs" />
+    <Compile Remove="Repository\DadosMantenedoraRepository.cs" />
+    <Compile Remove="Repository\DadosProcessoCrmRepository.cs" />
+    <Compile Remove="Repository\PagamentoRepository.cs" />
+    <Compile Remove="Repository\ParametroChaveRepository.cs" />
+    <Compile Remove="Repository\ParametroTextoRepository.cs" />
+    <Compile Remove="Repository\ParcelaDiluicaoRepository.cs" />
+    <Compile Remove="Repository\StatusAlunoRepository.cs" />
+    <Compile Remove="Repository\StatusProcessoRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\.sonarlint\diluicao-facilitada_back-dif_axzc0urmjezl7ajuswc-\CSharp\SonarLint.xml" Link="SonarLint.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Oracle.EntityFrameworkCore" Version="5.21.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tiradentes.DF.Domain\VipSgs.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

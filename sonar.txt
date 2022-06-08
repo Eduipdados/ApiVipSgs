@@ -1,0 +1,32 @@
+docker pull sonarqube:community
+docker pull sonarqube:latest
+
+docker run -d --name sonarqube -p 9002:9000 sonarqube
+user e senha admin admin
+docker pull sonarsource/sonar-scanner-cli
+
+1 - Você tem que criar uma chave de acesso - Fief-frontend-legado
+2 - substitui o codigo gerado no SONAR_LOGIN
+3- substitui o path do projeto - -v "path:/usr/src"
+
+
+sonar-scanner \
+  -Dsonar.projectKey=Fief-frontend-legado \
+  -Dsonar.sources=. \
+  -Dsonar.host.url=http://localhost:9002 \
+  -Dsonar.login=efc763fa9ea9ec4e74cdfe9069c3ff006d22358c
+
+  # vulcao
+    docker run \
+      --rm \
+      --network=host -e SONAR_HOST_URL='http://127.0.0.1:9002' \
+      -e SONAR_LOGIN="efc763fa9ea9ec4e74cdfe9069c3ff006d22358c" \
+      -v "/home/vulcao/meta/Tiradentes/back-dif:/usr/src" \
+      sonarsource/sonar-scanner-cli
+  # adriano
+    docker run \
+    --rm \
+    --network=host -e SONAR_HOST_URL='http://127.0.0.1:9002' \
+    -e SONAR_LOGIN="f64de324f32429e08da4b375e15cb811e74e2555" \
+    -v "/home/tony/Documents/jobsprojects/FIEF/frontend-legado:/usr/src" \
+    sonarsource/sonar-scanner-cli

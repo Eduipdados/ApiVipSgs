@@ -1,0 +1,85 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <CodeAnalysisRuleSet>..\..\.sonarlint\diluicao-facilitada_back-dif_axzc0urmjezl7ajuswc-csharp.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Interfaces\IAlunoContratoRepository.cs" />
+    <Compile Remove="Interfaces\IAlunoDiluicaoRepository.cs" />
+    <Compile Remove="Interfaces\IAlunoEADRepository.cs" />
+    <Compile Remove="Interfaces\IAlunoRepository.cs" />
+    <Compile Remove="Interfaces\IBeneficioRepository.cs" />
+    <Compile Remove="Interfaces\IBoletoEadRepository.cs" />
+    <Compile Remove="Interfaces\IBoletoMatRepository.cs" />
+    <Compile Remove="Interfaces\IBoletoRepository.cs" />
+    <Compile Remove="Interfaces\ICartaoEadRepository.cs" />
+    <Compile Remove="Interfaces\ICartaoMatRepository.cs" />
+    <Compile Remove="Interfaces\ICartaoRepository.cs" />
+    <Compile Remove="Interfaces\IDadosCandidatoCrmRepository.cs" />
+    <Compile Remove="Interfaces\IDadosMantenedoraRepository.cs" />
+    <Compile Remove="Interfaces\IDadosProcessoCrmRepository.cs" />
+    <Compile Remove="Interfaces\IPagamentoRepository.cs" />
+    <Compile Remove="Interfaces\IParametroChaveRepository.cs" />
+    <Compile Remove="Interfaces\IParametroTextoRepository.cs" />
+    <Compile Remove="Interfaces\IParcelaDiluicaoRepository.cs" />
+    <Compile Remove="Interfaces\IStatusAlunoRepository.cs" />
+    <Compile Remove="Interfaces\IStatusProcessoRepository.cs" />
+    <Compile Remove="Models\Aluno.cs" />
+    <Compile Remove="Models\AlunoContratoModel.cs" />
+    <Compile Remove="Models\AlunoDiluicao.cs" />
+    <Compile Remove="Models\AlunoEAD.cs" />
+    <Compile Remove="Models\Auth.cs" />
+    <Compile Remove="Models\BaseModel.cs" />
+    <Compile Remove="Models\BeneficioConvenio.cs" />
+    <Compile Remove="Models\BeneficioFief.cs" />
+    <Compile Remove="Models\BeneficioModel.cs" />
+    <Compile Remove="Models\BoletoEadModel.cs" />
+    <Compile Remove="Models\BoletoMatModel.cs" />
+    <Compile Remove="Models\BoletoModel.cs" />
+    <Compile Remove="Models\Campus.cs" />
+    <Compile Remove="Models\Candidato.cs" />
+    <Compile Remove="Models\CartaoEadModel.cs" />
+    <Compile Remove="Models\CartaoMatModel.cs" />
+    <Compile Remove="Models\CartaoModel.cs" />
+    <Compile Remove="Models\Curriculo.cs" />
+    <Compile Remove="Models\Curso.cs" />
+    <Compile Remove="Models\CursoCampus.cs" />
+    <Compile Remove="Models\CursoEAD.cs" />
+    <Compile Remove="Models\DadosAlunoDTO.cs" />
+    <Compile Remove="Models\DadosCandidatoCrm.cs" />
+    <Compile Remove="Models\DadosMantenedora.cs" />
+    <Compile Remove="Models\DadosProcessoCrm.cs" />
+    <Compile Remove="Models\DadosResponsavelDTO.cs" />
+    <Compile Remove="Models\DadosResponsavelRG.cs" />
+    <Compile Remove="Models\Desconto.cs" />
+    <Compile Remove="Models\DescontoEAD.cs" />
+    <Compile Remove="Models\DescriptografiaDTO.cs" />
+    <Compile Remove="Models\ExcecaoDesconto.cs" />
+    <Compile Remove="Models\FaixasPeriodos.cs" />
+    <Compile Remove="Models\InstituicaoDTO.cs" />
+    <Compile Remove="Models\MantenedoraModel.cs" />
+    <Compile Remove="Models\Pagamento.cs" />
+    <Compile Remove="Models\ParametroChave.cs" />
+    <Compile Remove="Models\ParametroTexto.cs" />
+    <Compile Remove="Models\Parcela.cs" />
+    <Compile Remove="Models\ParcelaDiluicao.cs" />
+    <Compile Remove="Models\ParcelaDTO.cs" />
+    <Compile Remove="Models\ParcelaEAD.cs" />
+    <Compile Remove="Models\ParcelaEadDTO.cs" />
+    <Compile Remove="Models\Processo.cs" />
+    <Compile Remove="Models\Responsaveis.cs" />
+    <Compile Remove="Models\SolicitacaoFief.cs" />
+    <Compile Remove="Models\Turma.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\.sonarlint\diluicao-facilitada_back-dif_axzc0urmjezl7ajuswc-\CSharp\SonarLint.xml" Link="SonarLint.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+</Project>
